@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Group\AdvancedGroupController;
 use App\Http\Controllers\Group\GroupManagementController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
@@ -19,7 +20,10 @@ Route::middleware('auth:api')->group(function (){
     Route::put('group/update',[GroupManagementController::class,'update_group']);
     Route::put('group/delete',[GroupManagementController::class,'delete_group']);
 
-    
+    // Group advanced routes
+    Route::post('group/add-participants',[AdvancedGroupController::class,'addParticipants']);
+    Route::post('group/remove-participants',[AdvancedGroupController::class,'removeParticipants']);
+    Route::get('group/get-groups-for-user',[AdvancedGroupController::class,'getGroupsForUser']);
 });
 Route::get('/user/token', [UserController::class, 'generateToken']);
 

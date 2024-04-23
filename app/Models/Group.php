@@ -30,17 +30,29 @@ class Group extends Model
     }
 
 
-
-    public function owner() {
+    /**
+     * Get the owner of the group.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function owner()
+    {
         return $this->belongsTo(User::class, 'owner_id');
     }
 
 
-    public function usersInTheGroup(array $users) : bool{
-
+    /**
+     * Checks if the provided users are in the group.
+     *
+     * @param array $users An array of user IDs to check.
+     *
+     * @return bool True if any of the provided users are in the group, false otherwise.
+     */
+    public function usersInTheGroup(array $users): bool
+    {
         $data = DB::table('group_user')
-        ->whereIn('id', $users)
-        ->where('id', $this -> id) -> first();
+            ->whereIn('user_id', $users)
+            ->where('group_id', $this->id)->first();
         return $data ? true : false;
     }
 }

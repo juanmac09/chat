@@ -114,6 +114,6 @@ class User extends Authenticatable implements JWTSubject
      */
     public function gruops_onwer(): HasMany
     {
-        return $this->hasMany(Group::class);
+        return $this->hasMany(Group::class,'onwer_id');
     }
 }

@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('groups', function (Blueprint $table) {
             $table->id();
             $table -> string('name');
+            $table -> foreignId('onwer_id') -> constrained('users') -> unique();
+            $table -> boolean('status') -> default(1);
             $table->timestamps();
         });
     }

@@ -75,7 +75,7 @@ class User extends Authenticatable implements JWTSubject
 
 
     // Relationship
-    
+
     /**
      * Get all of the groups for the user.
      *
@@ -104,5 +104,16 @@ class User extends Authenticatable implements JWTSubject
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+
+    /**
+     * Get all of the groups owned by the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function gruops_onwer(): HasMany
+    {
+        return $this->hasMany(Group::class);
     }
 }

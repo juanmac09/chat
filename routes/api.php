@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Group\AdvancedGroupController;
 use App\Http\Controllers\Group\GroupManagementController;
+use App\Http\Controllers\Message\MessageController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,9 @@ Route::middleware('auth:api')->group(function (){
     Route::post('group/add-participants',[AdvancedGroupController::class,'addParticipants']);
     Route::post('group/remove-participants',[AdvancedGroupController::class,'removeParticipants']);
     Route::get('group/get-groups-for-user',[AdvancedGroupController::class,'getGroupsForUser']);
+
+    // Message routes
+    Route::post('message/send',[MessageController::class,'sendMessage']);
 });
 Route::get('/user/token', [UserController::class, 'generateToken']);
 

@@ -41,7 +41,11 @@ class AddParticipantsGroupRequest extends FormRequest
         ];
     }
 
-
+    /**
+     * Adds custom validation logic after the main validation.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     */
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
@@ -49,12 +53,18 @@ class AddParticipantsGroupRequest extends FormRequest
             $status = DB::table('groups')->where('id', $id)->value('status');
 
             if ($status !== 1) {
-                $validator->errors()->add('id', 'The group with ID '.$id.' does not have active status.');
+                $validator->errors()->add('id', 'The group with ID ' . $id . ' does not have active status.');
             }
         });
     }
 
-
+    /**
+     * Handle the failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(

@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Http\Requests\Group;
+namespace App\Http\Requests\Message;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class DeleteGroupRequest extends FormRequest
+class markAsReadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +18,7 @@ class DeleteGroupRequest extends FormRequest
         return true;
     }
 
-    /**GroupManagementControlleGroupManagementController::class,'delete_group']);ss,'delete_group']);
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -25,35 +26,28 @@ class DeleteGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|numeric|exists:groups,id',
+            'id' => 'required|numeric|exists:messages,id',
         ];
     }
-    /**
-     * Add a validator after the default validation rules
-     *
-     * @param Validator $validator
-     * @return void
-     */
+
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-            $id = $this->input('id');
-            $status = DB::table('groups')->where('id', $id)->value('status');
-
-            if ($status !== 1) {
-                $validator->errors()->add('id', 'The group with ID ' . $id . ' does not have active status.');
+            $id = $this -> input('id');
+            $sender_id = DB::table('messages') -> where('id',$id) -> value('sender_id') ;
+            if ($sender_id == Auth::user() -> id) {
+                $validator -> errors() -> add('id', 'You cannot mark your own message as read.');
             }
         });
     }
 
-
     /**
-     * Handle the failed validation attempt.
+     * Handle the failed validation event.
      *
      * @param  \Illuminate\Contracts\Validation\Validator  $validator
      * @return void
      * @throws \Illuminate\Http\Exceptions\HttpResponseException
-     */
+    */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(

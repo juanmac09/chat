@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Group;
+namespace App\Http\Requests\Message;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
-class DeleteGroupRequest extends FormRequest
+class GetMessagesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,7 +17,7 @@ class DeleteGroupRequest extends FormRequest
         return true;
     }
 
-    /**GroupManagementControlleGroupManagementController::class,'delete_group']);ss,'delete_group']);
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -25,28 +25,19 @@ class DeleteGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id' => 'required|integer|numeric|exists:groups,id',
+            'recipient_entity_id' => [
+                'required',
+                'numeric',
+                'integer',
+                Rule::when(
+                    $this->input('recipient_type') == 1,
+                    Rule::exists('users', 'id'),
+                    Rule::exists('groups', 'id')
+                ),
+            ],
+            'recipient_type' => 'required|numeric|between:1,2',
         ];
     }
-    /**
-     * Add a validator after the default validation rules
-     *
-     * @param Validator $validator
-     * @return void
-     */
-    public function withValidator($validator)
-    {
-        $validator->after(function ($validator) {
-            $id = $this->input('id');
-            $status = DB::table('groups')->where('id', $id)->value('status');
-
-            if ($status !== 1) {
-                $validator->errors()->add('id', 'The group with ID ' . $id . ' does not have active status.');
-            }
-        });
-    }
-
-
     /**
      * Handle the failed validation attempt.
      *

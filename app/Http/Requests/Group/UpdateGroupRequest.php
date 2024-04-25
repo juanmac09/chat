@@ -30,7 +30,7 @@ class UpdateGroupRequest extends FormRequest
         ];
     }
 
-     /**
+    /**
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
@@ -43,12 +43,18 @@ class UpdateGroupRequest extends FormRequest
             $status = DB::table('groups')->where('id', $id)->value('status');
 
             if ($status !== 1) {
-                $validator->errors()->add('id', 'The group with ID '.$id.' does not have active status.');
+                $validator->errors()->add('id', 'The group with ID ' . $id . ' does not have active status.');
             }
         });
     }
 
-
+    /**
+     * Handle the failed validation attempt.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(

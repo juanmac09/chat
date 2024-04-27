@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Group;
 
+use App\Events\GroupCreationEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Group\CreateGroupRequest;
 use App\Http\Requests\Group\DeleteGroupRequest;
 use App\Http\Requests\Group\UpdateGroupRequest;
 use App\Interfaces\IGroupManagement;
+use Illuminate\Support\Facades\Auth;
 
 class GroupManagementController extends Controller
 {
@@ -27,7 +29,11 @@ class GroupManagementController extends Controller
     public function create_group(CreateGroupRequest $request)
     {
         try {
-            $this->group_service->create_group($request->name, $request->participants);
+            $user = Auth::user();
+            $partipants = $request -> participants;
+            $partipants[] = $user -> id;
+            $group = $this->group_service->create_group($request->name, $user -> id);
+            GroupCreationEvent::dispatch($group, $partipants);
             return response()->json(['success' => 'true'], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => 'true', 'error' => $th->getMessage()], 500);

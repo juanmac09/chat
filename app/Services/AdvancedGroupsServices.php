@@ -76,13 +76,13 @@ class AdvancedGroupsServices implements IAdvancedGroups
 
 
     /**
-     * Retrieves the groups that the authenticated user is a part of.
+     * Returns the groups that the given user is a member of.
      *
-     * @return \Illuminate\Database\Eloquent\Collection A collection of Group models representing the user's groups.
+     * @param User $user The user whose groups are to be retrieved.
+     * @return Collection A collection of groups that the user is a member of.
      */
-    public function getGroupsForUser()
+    public function getGroupsForUser(User $user)
     {
-        $user = Auth::user();
         $groups = $user->groups()->where('status', 1)->get();
         return $groups;
     }

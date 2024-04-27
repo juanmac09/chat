@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('recipients', function (Blueprint $table) {
             $table->id();
-            $table -> foreignId('message_id') -> constrained('messages');
+            $table -> foreignId('message_id') -> constrained('messages') -> unique();
             $table -> enum('recipient_type',['user', 'group']);
             $table -> unsignedBigInteger('recipient_entity_id');
             $table->timestamps();

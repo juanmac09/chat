@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Group\AddParticipantsGroupRequest;
 use App\Interfaces\IAdvancedGroups;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AdvancedGroupController extends Controller
 {
@@ -64,7 +65,8 @@ class AdvancedGroupController extends Controller
     public function getGroupsForUser()
     {
         try {
-            $groups = $this->group_service->getGroupsForUser();
+            $user = Auth::user();
+            $groups = $this->group_service->getGroupsForUser($user);
             return response()->json(['success' => 'true', 'groups' => $groups], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => 'false', 'error' => $th->getMessage()], 500);

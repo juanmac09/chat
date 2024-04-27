@@ -4,30 +4,25 @@ namespace App\Services;
 
 use App\Interfaces\IGroupManagement;
 use App\Models\Group;
-use Illuminate\Support\Facades\Auth;
 
 class GroupManagementServices implements IGroupManagement
 {
     /**
-     * Create a new group with the specified name and participants.
+     * Create a new group.
      *
      * @param string $name The name of the new group.
-     * @param array $participants An array of user IDs who will be participants in the new group.
+     * @param int $owner_id The ID of the owner of the new group.
      *
-     * @return void
-     *
-     * @throws \Illuminate\Database\QueryException
+     * @return \App\Models\Group The newly created group instance.
      */
-    public function create_group(string $name, array $participants)
+    public function create_group(string $name, int $owner_id)
     {
-        $user = Auth::user();
-        $participants[] = $user->id;
         $group = Group::create([
             'name' => $name,
-            'onwer_id' => $user->id,
+            'onwer_id' => $owner_id,
         ]);
 
-        $group->users()->attach($participants);
+        return $group;
     }
 
 

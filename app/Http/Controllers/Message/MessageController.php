@@ -8,6 +8,7 @@ use App\Http\Requests\Message\GetMessagesRequest;
 use App\Http\Requests\Message\markAsReadRequest;
 use App\Http\Requests\Message\SendMessageRequest;
 use App\Interfaces\IMessage;
+use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
@@ -28,7 +29,7 @@ class MessageController extends Controller
     public function sendMessage(SendMessageRequest $request)
     {
         try {
-            $message = $this->message_service->sendMessage($request->content);
+            $message = $this->message_service->sendMessage($request->content, Auth::user());
             SendMessageEvent::dispatch($message, $request->recipient_type, $request->recipient_entity_id);
             return response()->json(['success' => true], 200);
         } catch (\Throwable $th) {
@@ -45,7 +46,7 @@ class MessageController extends Controller
     public function getMessages(GetMessagesRequest $request)
     {
         try {
-            $message = $this->message_service->getMessages($request->recipient_entity_id, $request->recipient_type);
+            $message = $this->message_service->getMessages($request->recipient_entity_id, $request->recipient_type,Auth::user());
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
@@ -63,7 +64,7 @@ class MessageController extends Controller
     public function getMessageHistory()
     {
         try {
-            $message = $this->message_service->getMessageHistory();
+            $message = $this->message_service->getMessageHistory(Auth::user());
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
@@ -80,7 +81,7 @@ class MessageController extends Controller
     public function markAsRead(markAsReadRequest $request)
     {
         try {
-            $this->message_service->markAsRead($request->id);
+            $this->message_service->markAsRead($request->id,Auth::user());
             return response()->json(['success' => true], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);

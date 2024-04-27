@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Message;
 
+use App\Models\Message;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class markAsReadRequest extends FormRequest
 {
@@ -34,11 +34,18 @@ class markAsReadRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $id = $this -> input('id');
-            $sender_id = DB::table('messages') -> where('id',$id) -> value('sender_id') ;
-            if ($sender_id == Auth::user() -> id) {
+            $message = Message::find($id);
+            $user = Auth::user();
+            if ($message -> sender_id == $user -> id) {
                 $validator -> errors() -> add('id', 'You cannot mark your own message as read.');
             }
+         
+            if ($message -> recipient() -> value('recipient_type') == 'group' && !$user -> groups() -> where('groups.id', $id) -> first()) {
+               $validator -> errors() ->add('id', 'You cannot mark messages from groups to which you do not belong as read');
+            }
         });
+
+
     }
 
     /**

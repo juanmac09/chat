@@ -7,16 +7,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Message\GetMessagesRequest;
 use App\Http\Requests\Message\markAsReadRequest;
 use App\Http\Requests\Message\SendMessageRequest;
+use App\Http\Requests\User\VerifyUserIdRequest;
 use App\Interfaces\IMessage;
+use App\Interfaces\IUserRepository;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
     public $message_service;
-
-    public function __construct(IMessage $message_service)
+    public $user_service;
+    public function __construct(IMessage $message_service,IUserRepository $user_service)
     {
         $this->message_service = $message_service;
+        $this -> user_service = $user_service;
     }
 
     /**
@@ -61,10 +64,16 @@ class MessageController extends Controller
      * @return \Illuminate\Http\JsonResponse A JSON response containing the success status and the retrieved messages.
      * @throws \Throwable If an exception occurs during the message retrieval process.
      */
-    public function getMessageHistory()
+    public function getMessageHistory(VerifyUserIdRequest $request)
     {
         try {
-            $message = $this->message_service->getMessageHistory(Auth::user());
+            if ($request -> filled('id')) {
+                $user = $this -> user_service -> getUserForId($request -> id);
+            }
+            else{
+                $user =  Auth::user();
+            }
+            $message = $this->message_service->getMessageHistory($user);
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);

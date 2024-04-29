@@ -4,17 +4,19 @@ namespace App\Http\Controllers\Group;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Group\AddParticipantsGroupRequest;
+use App\Http\Requests\User\VerifyUserIdRequest;
 use App\Interfaces\IAdvancedGroups;
-use Illuminate\Http\Request;
+use App\Interfaces\IUserRepository;
 use Illuminate\Support\Facades\Auth;
 
 class AdvancedGroupController extends Controller
 {
     public $group_service;
-
-    public function __construct(IAdvancedGroups $group_service)
+    public $user_service;
+    public function __construct(IAdvancedGroups $group_service,IUserRepository $user_service)
     {
         $this->group_service = $group_service;
+        $this -> user_service = $user_service;
     }
 
     /**
@@ -62,10 +64,15 @@ class AdvancedGroupController extends Controller
      * @return \Illuminate\Http\JsonResponse A JSON response containing the user's groups.
      * @throws \Throwable If an exception occurs during the operation.
     */
-    public function getGroupsForUser()
+    public function getGroupsForUser(VerifyUserIdRequest $request)
     {
         try {
-            $user = Auth::user();
+            if ($request -> filled('id')) {
+                $user = $this -> user_service -> getUserForId($request -> id);
+            }
+            else{
+                $user =  Auth::user();
+            }
             $groups = $this->group_service->getGroupsForUser($user);
             return response()->json(['success' => 'true', 'groups' => $groups], 200);
         } catch (\Throwable $th) {

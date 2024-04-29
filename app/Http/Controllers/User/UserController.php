@@ -16,5 +16,4 @@ class UserController extends Controller
         return response()->json(['message'=>'authenticated'],200,['token' => $token]);
     }
 
-    
 }

@@ -25,6 +25,7 @@ Route::middleware('auth:api')->group(function (){
     Route::post('group/add-participants',[AdvancedGroupController::class,'addParticipants']);
     Route::post('group/remove-participants',[AdvancedGroupController::class,'removeParticipants']);
     Route::get('group/get-groups-for-user',[AdvancedGroupController::class,'getGroupsForUser']);
+    Route::get('group/get-participants-for-group',[AdvancedGroupController::class,'getParticipantsForGroup']);
 
     // Message routes
     Route::post('message/send',[MessageController::class,'sendMessage']);

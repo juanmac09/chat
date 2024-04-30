@@ -86,4 +86,22 @@ class AdvancedGroupsServices implements IAdvancedGroups
         $groups = $user->groups()->where('status', 1)->get();
         return $groups;
     }
+
+
+
+    /**
+     * Returns the participants for a given group.
+     *
+     * @param int $group_id The ID of the group whose participants are to be retrieved.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection A collection of users that are members of the specified group.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the group with the given ID is not found.
+     */
+    public function getParticipantsForGroup(int $group_id)
+    {
+        $group = Group::find($group_id);
+        $participants = $group->users() -> get();
+        return $participants;
+    }
 }

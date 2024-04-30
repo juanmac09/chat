@@ -32,6 +32,7 @@ Route::middleware('auth:api')->group(function (){
     Route::get('message/get',[MessageController::class,'getMessages']);
     Route::get('message/get-history',[MessageController::class,'getMessageHistory']);
     Route::post('message/markAsRead',[MessageController::class,'markAsRead']);
+    Route::get('message/countMessagesNotRead',[MessageController::class,'countMessagesNotRead']);
 });
 Route::get('/user/token', [UserController::class, 'generateToken']);
 

@@ -2,19 +2,25 @@
 
 namespace App\Providers;
 
-use App\Interfaces\IMessageQuery;
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
-use App\Interfaces\IMessage;
+use App\Interfaces\IMessageReaders;
 use App\Interfaces\IMqtt;
 use App\Interfaces\IRecipient;
+use App\Interfaces\ITranformResponses;
 use App\Interfaces\IUserRepository;
+use App\Interfaces\MessagesInterfaces\IMessageQueryForGroups;
+use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
+use App\Interfaces\MessagesInterfaces\IMessageSender;
 use App\Services\AdvancedGroupsServices;
 use App\Services\GroupManagementServices;
-use App\Services\MessageServices;
-use App\Services\Models\MessageQueryServices;
+use App\Services\MessageReadersService;
+use App\Services\MessageServices\MessageQueryForGroupsService;
+use App\Services\MessageServices\MessageQueryForUserService;
+use App\Services\MessageServices\MessageSenderService;
 use App\Services\MqttServices;
 use App\Services\RecipientServices;
+use App\Services\TranformResponsesService;
 use App\Services\UserRepositoryServices;
 use Illuminate\Support\ServiceProvider;
 
@@ -27,11 +33,14 @@ class AppServiceProvider extends ServiceProvider
     {
         $this -> app -> bind(IGroupManagement::class, GroupManagementServices::class);
         $this -> app -> bind(IAdvancedGroups::class, AdvancedGroupsServices::class);
-        $this -> app -> bind(IMessage::class,MessageServices::class);
         $this -> app -> bind(IRecipient::class,RecipientServices::class);
         $this -> app -> bind(IMqtt::class,MqttServices::class);
-        $this -> app -> bind(IMessageQuery::class,MessageQueryServices::class);
         $this -> app -> bind(IUserRepository::class,UserRepositoryServices::class);
+        $this -> app -> bind(IMessageQueryForGroups::class,MessageQueryForGroupsService::class);
+        $this -> app -> bind(IMessageQueryForUsers::class,MessageQueryForUserService::class);
+        $this -> app -> bind(IMessageSender::class,MessageSenderService::class);
+        $this -> app -> bind(IMessageReaders::class,MessageReadersService::class);
+        $this -> app -> bind(ITranformResponses::class,TranformResponsesService::class);
     }
 
     /**

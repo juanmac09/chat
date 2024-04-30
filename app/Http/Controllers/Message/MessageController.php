@@ -2,24 +2,31 @@
 
 namespace App\Http\Controllers\Message;
 
+use App\Events\markAsReadAMessageEvent;
 use App\Events\SendMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Message\GetMessagesRequest;
 use App\Http\Requests\Message\markAsReadRequest;
 use App\Http\Requests\Message\SendMessageRequest;
 use App\Http\Requests\User\VerifyUserIdRequest;
-use App\Interfaces\IMessage;
 use App\Interfaces\IUserRepository;
+use App\Interfaces\MessagesInterfaces\IMessageQueryForGroups;
+use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
+use App\Interfaces\MessagesInterfaces\IMessageSender;
 use Illuminate\Support\Facades\Auth;
 
 class MessageController extends Controller
 {
-    public $message_service;
+    public $messageSenderService;
+    public $messageQueryUserService;
+    public $messageQueryGroupService;
     public $user_service;
-    public function __construct(IMessage $message_service,IUserRepository $user_service)
+    public function __construct(IUserRepository $user_service, IMessageSender $messageSenderService, IMessageQueryForUsers $messageQueryUserService, IMessageQueryForGroups $messageQueryGroupService)
     {
-        $this->message_service = $message_service;
-        $this -> user_service = $user_service;
+        $this->user_service = $user_service;
+        $this->messageSenderService = $messageSenderService;
+        $this->messageQueryUserService = $messageQueryUserService;
+        $this->messageQueryGroupService = $messageQueryGroupService;
     }
 
     /**
@@ -32,7 +39,7 @@ class MessageController extends Controller
     public function sendMessage(SendMessageRequest $request)
     {
         try {
-            $message = $this->message_service->sendMessage($request->content, Auth::user());
+            $message = $this->messageSenderService->sendMessage($request->content, Auth::user());
             SendMessageEvent::dispatch($message, $request->recipient_type, $request->recipient_entity_id);
             return response()->json(['success' => true], 200);
         } catch (\Throwable $th) {
@@ -49,7 +56,7 @@ class MessageController extends Controller
     public function getMessages(GetMessagesRequest $request)
     {
         try {
-            $message = $this->message_service->getMessages($request->recipient_entity_id, $request->recipient_type,Auth::user());
+            $message = ($request->recipient_type == 1) ? $this->messageQueryUserService->getMessagesBetweenUsers(Auth::user()->id, $request->recipient_entity_id) : $this->messageQueryGroupService->getMessagesFromAGroup($request->recipient_entity_id);
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
@@ -67,13 +74,14 @@ class MessageController extends Controller
     public function getMessageHistory(VerifyUserIdRequest $request)
     {
         try {
-            if ($request -> filled('id')) {
-                $user = $this -> user_service -> getUserForId($request -> id);
-            }
-            else{
+            if ($request->filled('id')) {
+                $user = $this->user_service->getUserForId($request->id);
+            } else {
                 $user =  Auth::user();
             }
-            $message = $this->message_service->getMessageHistory($user);
+            $message = [];
+            $message['users'] = $this -> messageQueryUserService -> getChatHistoryBetweenUsers($user -> id);
+            $message['groups'] = $this -> messageQueryGroupService -> getChatHistoryBetweenUserAndGroups($user -> id);
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
@@ -90,8 +98,28 @@ class MessageController extends Controller
     public function markAsRead(markAsReadRequest $request)
     {
         try {
-            $this->message_service->markAsRead($request->id,Auth::user());
+            $message = $this->messageSenderService->markAsRead($request->id, Auth::user());
+            markAsReadAMessageEvent::dispatch(Auth::user(), $message);
             return response()->json(['success' => true], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Count unread messages for the authenticated user.
+     *
+     * This method retrieves the count of unread messages for the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the success status and the count of unread messages.
+     * @throws \Throwable If an exception occurs during the message retrieval process.
+     */
+    public function countMessagesNotRead()
+    {
+        try {
+            $unreadMessages = $this->messageQueryUserService->countMessageNotReads(Auth::user() -> id);
+            return response()->json(['success' => true, 'unreadMessages' => $unreadMessages], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
         }

@@ -1,12 +1,24 @@
 <?php
 
-namespace App\Services\Models;
+namespace App\Services\MessageServices;
 
-use App\Interfaces\IMessageQuery;
+use App\Interfaces\IMessageReaders;
+use App\Interfaces\ITranformResponses;
+use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
 use Illuminate\Support\Facades\DB;
 
-class MessageQueryServices implements IMessageQuery
+class MessageQueryForUserService implements IMessageQueryForUsers
 {
+
+    public $messageReadersService;
+    public $transformResponsesService;
+
+
+    public function __construct(IMessageReaders $messageReadersService, ITranformResponses $transformResponsesService){
+        $this->messageReadersService = $messageReadersService;
+        $this->transformResponsesService = $transformResponsesService;
+    }
+
     /**
      * Get messages between two users.
      *
@@ -16,7 +28,6 @@ class MessageQueryServices implements IMessageQuery
      */
     public function getMessagesBetweenUsers(int $sender_id, int $recipient_id)
     {
-        // Realizar la consulta para obtener los mensajes entre dos usuarios
         $data = DB::table('chatApp.users AS sender')
             ->select([
                 'messages.id',
@@ -42,29 +53,8 @@ class MessageQueryServices implements IMessageQuery
             ->where('recipients.recipient_type', 'user')
             ->get();
 
-        // Transformar la respuesta y devolverla
-        return $this->transformResponse($data);
+         return $this -> transformResponsesService->transformResponse($data,$this -> messageReadersService);
     }
-
-    /**
-     * Get messages from a group.
-     *
-     * @param int $recipient_id The ID of the recipient entity (user or group).
-     * @return \Illuminate\Support\Collection A collection of messages from the specified group.
-     */
-    public function getMessagesFromAGroup(int $recipient_id)
-    {
-        // Realizar la consulta para obtener los mensajes de un grupo
-        $data = DB::table('chatApp.messages')
-            ->join('chatApp.recipients', 'messages.id', '=', 'recipients.message_id')
-            ->where('recipients.recipient_entity_id', $recipient_id)
-            ->where('recipients.recipient_type', 'group')
-            ->get();
-
-        // Transformar la respuesta y devolverla
-        return $this->transformResponse($data);
-    }
-
     /**
      * Get chat history between users.
      *
@@ -73,7 +63,6 @@ class MessageQueryServices implements IMessageQuery
      */
     public function getChatHistoryBetweenUsers(int $sender_id)
     {
-
         $data = DB::table('chatApp.users AS sender')
             ->select([
                 'messages.id',
@@ -93,57 +82,31 @@ class MessageQueryServices implements IMessageQuery
             ->get();
 
 
-        return $this->transformResponse($data);
+         return $this -> transformResponsesService->transformResponse($data,$this -> messageReadersService);
     }
 
-    /**
-     * Get chat history between users and groups.
-     *
-     * @param int $sender_id The ID of the sender user.
-     * @return \Illuminate\Support\Collection A collection of messages between the two users and groups.
-     */
-    public function getChatHistoryBetweenUserAndGroups(int $sender_id)
-    {
 
-        $data = DB::table('chatApp.messages')
-            ->join('chatApp.recipients', 'messages.id', '=', 'recipients.message_id')
-            ->where('messages.sender_id', $sender_id)
-            ->where('recipients.recipient_type', 'group')
+    /**
+     * Count unread messages for a specific user.
+     *
+     * @param int $user_id The ID of the user to get the unread messages for.
+     * @return \Illuminate\Support\Collection A collection of unread messages for the specified user.
+     */
+    public function countMessageNotReads(int $user_id)
+    {
+        $unreadMessagesCount = DB::table('chatApp.users AS u')
+            ->select('u.id AS sender_id', DB::raw('COUNT(*) AS unread_messages_count'))
+            ->join('chatApp.messages AS m', 'u.id', '=', 'm.sender_id')
+            ->join('chatApp.recipients AS r', 'm.id', '=', 'r.message_id')
+            ->leftJoin('chatApp.message_reads AS mr', function ($join) {
+                $join->on('m.id', '=', 'mr.message_id')
+                    ->on('r.recipient_entity_id', '=', 'mr.user_id');
+            })
+            ->where('r.recipient_entity_id', $user_id)
+            ->whereNull('mr.read_at')
+            ->groupBy('u.id')
             ->get();
 
-
-        return $this->transformResponse($data);
-    }
-
-    /**
-     * Transforms the response data into a format that includes read status for each message.
-     *
-     * @param \Illuminate\Support\Collection $messages The collection of messages to transform.
-     * @return \Illuminate\Support\Collection A collection of messages with read status included.
-     */
-    public function transformResponse($messages)
-    {
-        return $messages->map(function ($message) {
-
-            $message->read = $this->getMessageReaders($message->id);
-            return $message;
-        });
-    }
-
-    /**
-     * Get the readers of a specific message.
-     *
-     * @param int $message_id The ID of the message to get the readers for.
-     * @return array An array of readers for the specified message, including their user ID, name, and read status.
-     */
-    public function getMessageReaders(int $message_id)
-    {
-
-        return DB::table('message_reads')
-            ->join('users', 'message_reads.user_id', '=', 'users.id')
-            ->select('message_reads.user_id', 'users.name', 'message_reads.read_at')
-            ->where('message_id', $message_id)
-            ->get()
-            ->toArray();
+        return $unreadMessagesCount;
     }
 }

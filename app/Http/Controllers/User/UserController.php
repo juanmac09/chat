@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public $user_service;
     public $message_service;
-    public function __construct(IUserManagement $user_service, IMessageQuery $message_service)
+    public function __construct(IUserManagement $user_service, IMessageQuery $message_service,)
     {
         $this->user_service = $user_service;
         $this->message_service = $message_service;
@@ -38,6 +38,21 @@ class UserController extends Controller
             $users = $this->user_service->getUsers(Auth::user()->id);
             $users = $this->message_service->getLastMessageBetweenUsers($users, Auth::user()->id);
             return response()->json(['success' => 'true', 'users' => $users], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Get the authenticated user.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \Throwable
+     */
+    public function getUser()
+    {
+        try {
+            return response()->json(['success' => 'true', 'user' => Auth::user()], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
         }

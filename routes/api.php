@@ -37,6 +37,7 @@ Route::middleware('auth:api')->group(function (){
 
     // User routes
     Route::get('user/get-users',[UserController::class,'getUsersWithLastMessage']);
+    Route::get('user/get-user',[UserController::class,'getUser']);
 });
 Route::get('/user/token', [UserController::class, 'generateToken']);
 

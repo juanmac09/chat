@@ -39,8 +39,7 @@ class markAsReadRequest extends FormRequest
             if ($message -> sender_id == $user -> id) {
                 $validator -> errors() -> add('id', 'You cannot mark your own message as read.');
             }
-         
-            if ($message -> recipient() -> value('recipient_type') == 'group' && !$user -> groups() -> where('groups.id', $id) -> first()) {
+            if ($message -> recipient() -> value('recipient_type') == 'group' && !$user -> groups() -> where('groups.id', $message -> recipient() -> value('recipient_entity_id')) -> first()) {
                $validator -> errors() ->add('id', 'You cannot mark messages from groups to which you do not belong as read');
             }
         });

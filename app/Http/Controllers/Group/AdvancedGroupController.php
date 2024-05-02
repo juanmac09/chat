@@ -8,16 +8,19 @@ use App\Http\Requests\Group\VerifyGroupIdRequest;
 use App\Http\Requests\User\VerifyUserIdRequest;
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IUserRepository;
+use App\Interfaces\MessagesInterfaces\IMessageQuery;
 use Illuminate\Support\Facades\Auth;
 
 class AdvancedGroupController extends Controller
 {
     public $group_service;
     public $user_service;
-    public function __construct(IAdvancedGroups $group_service, IUserRepository $user_service)
+    public $message_service;
+    public function __construct(IAdvancedGroups $group_service, IUserRepository $user_service, IMessageQuery $message_service)
     {
         $this->group_service = $group_service;
         $this->user_service = $user_service;
+        $this->message_service = $message_service;
     }
 
     /**
@@ -60,7 +63,7 @@ class AdvancedGroupController extends Controller
 
 
     /**
-     * Returns a list of groups that the specified user is a member of.
+     * Retrieves the list of groups for a given user.
      *
      * @param VerifyUserIdRequest $request The request containing the user ID.
      *
@@ -77,6 +80,7 @@ class AdvancedGroupController extends Controller
                 $user =  Auth::user();
             }
             $groups = $this->group_service->getGroupsForUser($user);
+            $groups = $this->message_service->getLastMessageFromGroup($groups);
             return response()->json(['success' => 'true', 'groups' => $groups], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => 'false', 'error' => $th->getMessage()], 500);

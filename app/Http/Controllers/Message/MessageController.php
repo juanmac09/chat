@@ -80,8 +80,8 @@ class MessageController extends Controller
                 $user =  Auth::user();
             }
             $message = [];
-            $message['users'] = $this -> messageQueryUserService -> getChatHistoryBetweenUsers($user -> id);
-            $message['groups'] = $this -> messageQueryGroupService -> getChatHistoryBetweenUserAndGroups($user -> id);
+            $message['users'] = $this->messageQueryUserService->getChatHistoryBetweenUsers($user->id);
+            $message['groups'] = $this->messageQueryGroupService->getChatHistoryBetweenUserAndGroups($user->id);
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
@@ -118,7 +118,26 @@ class MessageController extends Controller
     public function countMessagesNotRead()
     {
         try {
-            $unreadMessages = $this->messageQueryUserService->countMessageNotReads(Auth::user() -> id);
+            $unreadMessages = $this->messageQueryUserService->countMessageNotReads(Auth::user()->id);
+            return response()->json(['success' => true, 'unreadMessages' => $unreadMessages], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Count unread messages for the authenticated user in a group context.
+     *
+     * This method retrieves the count of unread messages for the authenticated user in a group context.
+     *
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the success status and the count of unread messages.
+     * @throws \Throwable If an exception occurs during the message retrieval process.
+     */
+    public function countMessagesNotReadOfGroup()
+    {
+        try {
+            $unreadMessages = $this->messageQueryGroupService->countMessageNotReads(Auth::user()->id);
             return response()->json(['success' => true, 'unreadMessages' => $unreadMessages], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);

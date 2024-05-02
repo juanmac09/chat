@@ -13,7 +13,8 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
     public $transformResponsesService;
 
 
-    public function __construct(IMessageReaders $messageReadersService, ITranformResponses $transformResponsesService){
+    public function __construct(IMessageReaders $messageReadersService, ITranformResponses $transformResponsesService)
+    {
         $this->messageReadersService = $messageReadersService;
         $this->transformResponsesService = $transformResponsesService;
     }
@@ -33,7 +34,7 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
             ->get();
 
 
-        return $this -> transformResponsesService->transformResponse($data,$this -> messageReadersService);
+        return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);
     }
 
     /**
@@ -52,6 +53,31 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
             ->get();
 
 
-            return $this -> transformResponsesService->transformResponse($data,$this -> messageReadersService);
+        return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);
+    }
+    /**
+     * Count unread messages in groups for a specific user.
+     *
+     * @param int $user_id The ID of the user to check unread messages for.
+     * @return \Illuminate\Support\Collection A collection of groups with their unread message counts.
+     */
+    public function countMessageNotReads(int $user_id)
+    {
+        $unreadMessagesCount = DB::table('messages AS m')
+            ->select('g.id AS group_id', DB::raw('COUNT(*) AS unread_messages_count'))
+            ->join('recipients AS r', 'm.id', '=', 'r.message_id')
+            ->join('group_user AS gu', 'r.recipient_entity_id', '=', 'gu.group_id')
+            ->leftJoin('message_reads AS mr', function ($join) {
+                $join->on('m.id', '=', 'mr.message_id')
+                    ->on('gu.user_id', '=', 'mr.user_id');
+            })
+            ->join('groups AS g', 'gu.group_id', '=', 'g.id')
+            ->where('r.recipient_type', 'group')
+            ->where('gu.user_id', $user_id)
+            ->whereNull('mr.read_at')
+            ->groupBy('g.id')
+            ->get();
+
+        return $unreadMessagesCount;
     }
 }

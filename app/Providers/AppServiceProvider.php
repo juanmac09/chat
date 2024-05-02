@@ -8,7 +8,9 @@ use App\Interfaces\IMessageReaders;
 use App\Interfaces\IMqtt;
 use App\Interfaces\IRecipient;
 use App\Interfaces\ITranformResponses;
+use App\Interfaces\IUserManagement;
 use App\Interfaces\IUserRepository;
+use App\Interfaces\MessagesInterfaces\IMessageQuery;
 use App\Interfaces\MessagesInterfaces\IMessageQueryForGroups;
 use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
 use App\Interfaces\MessagesInterfaces\IMessageSender;
@@ -17,10 +19,12 @@ use App\Services\GroupManagementServices;
 use App\Services\MessageReadersService;
 use App\Services\MessageServices\MessageQueryForGroupsService;
 use App\Services\MessageServices\MessageQueryForUserService;
+use App\Services\MessageServices\MessageQueryService;
 use App\Services\MessageServices\MessageSenderService;
 use App\Services\MqttServices;
 use App\Services\RecipientServices;
 use App\Services\TranformResponsesService;
+use App\Services\UserManagementService;
 use App\Services\UserRepositoryServices;
 use Illuminate\Support\ServiceProvider;
 
@@ -41,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IMessageSender::class,MessageSenderService::class);
         $this -> app -> bind(IMessageReaders::class,MessageReadersService::class);
         $this -> app -> bind(ITranformResponses::class,TranformResponsesService::class);
+        $this -> app -> bind(IUserManagement::class,UserManagementService::class);
+        $this -> app -> bind(IMessageQuery::class,MessageQueryService::class);
     }
 
     /**

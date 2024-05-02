@@ -34,11 +34,7 @@ class MessageQueryService implements IMessageQuery
             $usersWithLastMessage->push($user);
         }
 
-        $sortedUsers = $usersWithLastMessage->sortByDesc(function ($user) {
-            return $user->lastMessage ? $user->lastMessage->created_at : '0000-01-01 00:00:00';
-        });
-
-        return $sortedUsers;
+        return $usersWithLastMessage;
     }
     /**
      * Get the last message from a group.
@@ -56,10 +52,6 @@ class MessageQueryService implements IMessageQuery
             $group->lastMessage = $messages->sortByDesc('created_at')->first();
             $groupsWithLastMessage->push($group);
         }
-        $sortedGroups = $groupsWithLastMessage->sortByDesc(function ($group) {
-            return $group->lastMessage ? $group->lastMessage->created_at : '0000-01-01 00:00:00';
-        });
-
-        return $sortedGroups;
+        return $groupsWithLastMessage;
     }
 }

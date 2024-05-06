@@ -27,11 +27,14 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
     public function getMessagesFromAGroup(int $recipient_id)
     {
 
-        $data = DB::table('chatApp.messages')
-            ->join('chatApp.recipients', 'messages.id', '=', 'recipients.message_id')
-            ->where('recipients.recipient_entity_id', $recipient_id)
-            ->where('recipients.recipient_type', 'group')
+        $data = DB::table('chatApp.messages AS m')
+            ->select('m.*', 'r.recipient_type', 'r.recipient_entity_id', 'sender.name as sender_name')
+            ->join('chatApp.recipients AS r', 'm.id', '=', 'r.message_id')
+            ->join('chatApp.users AS sender', 'm.sender_id', '=', 'sender.id')
+            ->where('r.recipient_entity_id', '=', $recipient_id)
+            ->where('r.recipient_type', '=', 'group')
             ->get();
+
 
 
         return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);

@@ -3,21 +3,24 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\VerifyUserIdRequest;
 use App\Interfaces\IUserManagement;
+use App\Interfaces\IUserRepository;
 use App\Interfaces\MessagesInterfaces\IMessageQuery;
 use App\Models\User;
-use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
     public $user_service;
+    public $user_repository;
     public $message_service;
-    public function __construct(IUserManagement $user_service, IMessageQuery $message_service,)
+    public function __construct(IUserManagement $user_service, IMessageQuery $message_service, IUserRepository $user_repository)
     {
         $this->user_service = $user_service;
         $this->message_service = $message_service;
+        $this->user_repository = $user_repository;
     }
     public function generateToken()
     {
@@ -44,15 +47,20 @@ class UserController extends Controller
     }
 
     /**
-     * Get the authenticated user.
+     * Get a user by their ID.
      *
+     * @param VerifyUserIdRequest $request
      * @return \Illuminate\Http\JsonResponse
      * @throws \Throwable
      */
-    public function getUser()
+    public function getUser(VerifyUserIdRequest $request)
     {
         try {
-            return response()->json(['success' => 'true', 'user' => Auth::user()], 200);
+            $user = Auth::user();
+            if ($request->has('id')) {
+                $user = $this->user_repository->getUserForId($request->id);
+            }
+            return response()->json(['success' => 'true', 'user' => $user], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
         }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
+use App\Interfaces\IGroupRepository;
 use App\Interfaces\IMessageReaders;
 use App\Interfaces\IMqtt;
 use App\Interfaces\IRecipient;
@@ -16,6 +17,7 @@ use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
 use App\Interfaces\MessagesInterfaces\IMessageSender;
 use App\Services\AdvancedGroupsServices;
 use App\Services\GroupManagementServices;
+use App\Services\GroupRepositoryService;
 use App\Services\MessageReadersService;
 use App\Services\MessageServices\MessageQueryForGroupsService;
 use App\Services\MessageServices\MessageQueryForUserService;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(ITranformResponses::class,TranformResponsesService::class);
         $this -> app -> bind(IUserManagement::class,UserManagementService::class);
         $this -> app -> bind(IMessageQuery::class,MessageQueryService::class);
+        $this-> app -> bind(IGroupRepository::class,GroupRepositoryService::class);
     }
 
     /**

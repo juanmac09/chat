@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Group;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Group\AddParticipantsGroupRequest;
 use App\Http\Requests\Group\VerifyGroupIdRequest;
+use App\Http\Requests\Group\verifyGroupIdRequest as GroupVerifyGroupIdRequest;
 use App\Http\Requests\User\VerifyUserIdRequest;
 use App\Interfaces\IAdvancedGroups;
+use App\Interfaces\IGroupRepository;
 use App\Interfaces\IUserRepository;
 use App\Interfaces\MessagesInterfaces\IMessageQuery;
 use Illuminate\Support\Facades\Auth;
@@ -16,11 +18,13 @@ class AdvancedGroupController extends Controller
     public $group_service;
     public $user_service;
     public $message_service;
-    public function __construct(IAdvancedGroups $group_service, IUserRepository $user_service, IMessageQuery $message_service)
+    public $group_repository;
+    public function __construct(IAdvancedGroups $group_service, IUserRepository $user_service, IMessageQuery $message_service, IGroupRepository $group_repository)
     {
         $this->group_service = $group_service;
         $this->user_service = $user_service;
         $this->message_service = $message_service;
+        $this->group_repository = $group_repository;
     }
 
     /**
@@ -102,6 +106,24 @@ class AdvancedGroupController extends Controller
         try {
             $participants = $this->group_service->getParticipantsForGroup($request->id);
             return response()->json(['success' => 'true', 'participants' => $participants], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => 'false', 'error' => $th->getMessage()], 500);
+        }
+    }
+
+
+    /**
+     * Retrieves a specific group by its ID.
+     *
+     * @param  \Illuminate\Http\Request  $request  The HTTP request containing the group ID.
+     * @return \Illuminate\Http\JsonResponse  A JSON response containing the group details and a status code.
+     * @throws \Throwable  If an exception occurs during the operation.
+     */
+    public function getGroupForId(GroupVerifyGroupIdRequest $request)
+    {
+        try {
+            $group = $this->group_repository->getGroupForId($request->id);
+            return response()->json(['success' => 'true', 'group' => $group], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => 'false', 'error' => $th->getMessage()], 500);
         }

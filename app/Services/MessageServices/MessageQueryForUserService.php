@@ -14,7 +14,8 @@ class MessageQueryForUserService implements IMessageQueryForUsers
     public $transformResponsesService;
 
 
-    public function __construct(IMessageReaders $messageReadersService, ITranformResponses $transformResponsesService){
+    public function __construct(IMessageReaders $messageReadersService, ITranformResponses $transformResponsesService)
+    {
         $this->messageReadersService = $messageReadersService;
         $this->transformResponsesService = $transformResponsesService;
     }
@@ -53,7 +54,7 @@ class MessageQueryForUserService implements IMessageQueryForUsers
             ->where('recipients.recipient_type', 'user')
             ->get();
 
-         return $this -> transformResponsesService->transformResponse($data,$this -> messageReadersService);
+        return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);
     }
     /**
      * Get chat history between users.
@@ -82,7 +83,7 @@ class MessageQueryForUserService implements IMessageQueryForUsers
             ->get();
 
 
-         return $this -> transformResponsesService->transformResponse($data,$this -> messageReadersService);
+        return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);
     }
 
 
@@ -95,20 +96,47 @@ class MessageQueryForUserService implements IMessageQueryForUsers
     public function countMessageNotReads(int $user_id)
     {
         $unreadMessagesCount = DB::table('chatApp.users AS u')
-        ->select('u.id AS sender_id', DB::raw('COUNT(*) AS unread_messages_count'))
-        ->join('chatApp.messages AS m', 'u.id', '=', 'm.sender_id')
-        ->join('chatApp.recipients AS r', 'm.id', '=', 'r.message_id')
-        ->leftJoin('chatApp.message_reads AS mr', function ($join) {
-            $join->on('m.id', '=', 'mr.message_id')
-                ->on('r.recipient_entity_id', '=', 'mr.user_id');
-        })
-        ->where('r.recipient_entity_id', $user_id)
-        ->where('r.recipient_type', 'user')
-        ->whereNull('mr.read_at')
-        ->groupBy('u.id')
-        ->get();
-    
+            ->select('u.id AS sender_id', DB::raw('COUNT(*) AS unread_messages_count'))
+            ->join('chatApp.messages AS m', 'u.id', '=', 'm.sender_id')
+            ->join('chatApp.recipients AS r', 'm.id', '=', 'r.message_id')
+            ->leftJoin('chatApp.message_reads AS mr', function ($join) {
+                $join->on('m.id', '=', 'mr.message_id')
+                    ->on('r.recipient_entity_id', '=', 'mr.user_id');
+            })
+            ->where('r.recipient_entity_id', $user_id)
+            ->where('r.recipient_type', 'user')
+            ->whereNull('mr.read_at')
+            ->groupBy('u.id')
+            ->get();
+
 
         return $unreadMessagesCount;
+    }
+
+    /**
+     * Count unread messages for a specific user.
+     *
+     * @param int $user_id The ID of the user to get the unread messages for.
+     * @return \Illuminate\Support\Collection A collection of unread messages for the specified user.
+    */
+    public function countUnreadMessagesPerUser(int $sender, int $recipient)
+    {
+
+        $ids = DB::table('chatApp.users AS u')
+            ->select('m.id AS id')
+            ->join('chatApp.messages AS m', 'u.id', '=', 'm.sender_id')
+            ->join('chatApp.recipients AS r', 'm.id', '=', 'r.message_id')
+            ->leftJoin('chatApp.message_reads AS mr', function ($join) {
+                $join->on('m.id', '=', 'mr.message_id')
+                    ->on('r.recipient_entity_id', '=', 'mr.user_id');
+            })
+            ->where('r.recipient_entity_id', $recipient)
+            ->where('r.recipient_type', 'user')
+            ->whereNull('mr.read_at')
+            ->where('u.id', $sender)
+            ->orderBy('u.id')
+            ->get();
+
+        return $ids;
     }
 }

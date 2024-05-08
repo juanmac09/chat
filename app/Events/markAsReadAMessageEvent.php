@@ -18,13 +18,18 @@ class markAsReadAMessageEvent
 
     public $user;
     public $message;
+    public $type;
+    public $sender;
     /**
      * Create a new event instance.
      */
-    public function __construct(User $user, Message $message)
+    public function __construct(User $user,int $type, ?Message $message  =  null, ?int $sender = null)
     {
         $this -> user = $user;
+        $this -> type = $type;
         $this -> message = $message;
+        $this -> sender = $sender;
+        
     }
 
     /**

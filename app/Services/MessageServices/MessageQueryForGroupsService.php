@@ -50,14 +50,14 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
     {
 
         $data = DB::table('chatApp.messages')
-        ->select('messages.*', 'chatApp.groups.name as group_name', 'chatApp.users.name as sender_name')
-        ->join('chatApp.recipients', 'messages.id', '=', 'recipients.message_id')
-        ->join('chatApp.groups', 'chatApp.groups.id', '=', 'recipients.recipient_entity_id')
-        ->join('chatApp.users', 'chatApp.messages.sender_id', '=', 'chatApp.users.id')
-        ->where('messages.sender_id', $sender_id)
-        ->where('recipients.recipient_type', 'group')
-        ->get();
-    
+            ->select('messages.*', 'chatApp.groups.name as group_name', 'chatApp.users.name as sender_name')
+            ->join('chatApp.recipients', 'messages.id', '=', 'recipients.message_id')
+            ->join('chatApp.groups', 'chatApp.groups.id', '=', 'recipients.recipient_entity_id')
+            ->join('chatApp.users', 'chatApp.messages.sender_id', '=', 'chatApp.users.id')
+            ->where('messages.sender_id', $sender_id)
+            ->where('recipients.recipient_type', 'group')
+            ->get();
+
 
 
         return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);
@@ -70,23 +70,48 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
      */
     public function countMessageNotReads(int $user_id)
     {
-        $unreadMessagesCount = $unreadMessagesCount = DB::table('messages AS m')
-        ->select('g.id AS group_id', DB::raw('COUNT(*) AS unread_messages_count'))
-        ->join('recipients AS r', 'm.id', '=', 'r.message_id')
-        ->join('group_user AS gu', 'r.recipient_entity_id', '=', 'gu.group_id')
-        ->leftJoin('message_reads AS mr', function ($join) {
-            $join->on('m.id', '=', 'mr.message_id')
-                ->on('gu.user_id', '=', 'mr.user_id');
-        })
-        ->join('groups AS g', 'gu.group_id', '=', 'g.id')
-        ->where('r.recipient_type', 'group')
-        ->where('gu.user_id', $user_id)
-        ->where('m.sender_id', '<>', $user_id)
-        ->whereNull('mr.read_at')
-        ->groupBy('g.id')
-        ->get();
-    
+        $unreadMessagesCount = DB::table('messages AS m')
+            ->select('g.id AS group_id', DB::raw('COUNT(*) AS unread_messages_count'))
+            ->join('recipients AS r', 'm.id', '=', 'r.message_id')
+            ->join('group_user AS gu', 'r.recipient_entity_id', '=', 'gu.group_id')
+            ->leftJoin('message_reads AS mr', function ($join) {
+                $join->on('m.id', '=', 'mr.message_id')
+                    ->on('gu.user_id', '=', 'mr.user_id');
+            })
+            ->join('groups AS g', 'gu.group_id', '=', 'g.id')
+            ->where('r.recipient_type', 'group')
+            ->where('gu.user_id', $user_id)
+            ->where('m.sender_id', '<>', $user_id)
+            ->whereNull('mr.read_at')
+            ->groupBy('g.id')
+            ->get();
+
 
         return $unreadMessagesCount;
+    }
+
+
+
+    public function countUnreadMessagesPerGroup(int $sender, int $recipient)
+    {
+
+        $ids = DB::table('messages AS m')
+            ->select('m.id')
+            ->join('recipients AS r', 'm.id', '=', 'r.message_id')
+            ->join('group_user AS gu', 'r.recipient_entity_id', '=', 'gu.group_id')
+            ->leftJoin('message_reads AS mr', function ($join) {
+                $join->on('m.id', '=', 'mr.message_id')
+                    ->on('gu.user_id', '=', 'mr.user_id');
+            })
+            ->join('groups AS g', 'gu.group_id', '=', 'g.id')
+            ->where('r.recipient_type', 'group')
+            ->where('gu.user_id', $sender)
+            ->where('m.sender_id', '<>', $sender)
+            ->where('g.id', $recipient)
+            ->whereNull('mr.read_at')
+            ->get();
+
+
+        return $ids;
     }
 }

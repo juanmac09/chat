@@ -6,6 +6,7 @@ use App\Events\markAsReadAMessageEvent;
 use App\Events\SendMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Message\GetMessagesRequest;
+use App\Http\Requests\Message\markAllMessageAsReadRequest;
 use App\Http\Requests\Message\markAsReadRequest;
 use App\Http\Requests\Message\SendMessageRequest;
 use App\Http\Requests\User\VerifyUserIdRequest;
@@ -99,7 +100,25 @@ class MessageController extends Controller
     {
         try {
             $message = $this->messageSenderService->markAsRead($request->id, Auth::user());
-            markAsReadAMessageEvent::dispatch(Auth::user(), $message);
+            markAsReadAMessageEvent::dispatch(Auth::user(),1 ,$message);
+            return response()->json(['success' => true], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
+    /**
+     * Mark all messages as read for the specified sender and user.
+     *
+     * @param \App\Http\Requests\Message\markAllMessageAsReadRequest $request The HTTP request containing the sender ID, user ID, and recipient type.
+     * @return \Illuminate\Http\JsonResponse A JSON response indicating the success of the message marking operation.
+     * @throws \Throwable If an exception occurs during the message marking process.
+     */
+    public function markAllMessagesAsRead(markAllMessageAsReadRequest $request)
+    {
+        try {
+
+            $this->messageSenderService->markAllMessagesAsRead($request->id_sender, Auth::user()->id, $request->type);
+            markAsReadAMessageEvent::dispatch(Auth::user(),2,null,$request->id_sender);
             return response()->json(['success' => true], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);

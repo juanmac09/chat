@@ -8,4 +8,5 @@ interface IMessageSender
 {
     public function sendMessage(string $message, User $user);
     public function markAsRead(int $message_id, User $user);
+    public function markAllMessagesAsRead(int $sender, int $recipient, int $type);
 }

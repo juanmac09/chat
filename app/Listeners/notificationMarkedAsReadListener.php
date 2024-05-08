@@ -45,6 +45,7 @@ class notificationMarkedAsReadListener
         }else{
             $data = [
                 'sender' => $event -> sender,
+                'recipient'=> $event->user->id,
             ];
             $data = json_encode($data);
             $topic = 'markAllMessageAsRead/user/';

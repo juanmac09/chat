@@ -90,11 +90,17 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
         return $unreadMessagesCount;
     }
 
-
-
+    /**
+     * Count unread messages in a specific group for a specific user.
+     *
+     * @param int $sender The ID of the user to check unread messages for.
+     * @param int $recipient The ID of the group to check unread messages for.
+     * @return \Illuminate\Support\Collection A collection of message IDs that are unread for the specified user and group.
+     */
     public function countUnreadMessagesPerGroup(int $sender, int $recipient)
     {
 
+        
         $ids = DB::table('messages AS m')
             ->select('m.id')
             ->join('recipients AS r', 'm.id', '=', 'r.message_id')
@@ -105,13 +111,11 @@ class MessageQueryForGroupsService implements IMessageQueryForGroups
             })
             ->join('groups AS g', 'gu.group_id', '=', 'g.id')
             ->where('r.recipient_type', 'group')
-            ->where('gu.user_id', $sender)
-            ->where('m.sender_id', '<>', $sender)
-            ->where('g.id', $recipient)
+            ->where('gu.user_id',$recipient )
+            ->where('m.sender_id', '<>',$recipient)
+            ->where('g.id', $sender)
             ->whereNull('mr.read_at')
             ->get();
-
-
         return $ids;
     }
 }

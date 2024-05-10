@@ -24,7 +24,7 @@ class UserController extends Controller
     }
     public function generateToken()
     {
-        $user = User::find(1);
+        $user = User::find(4);
         $token = JWTAuth::fromUser($user);
         return response()->json(['message' => 'authenticated'], 200, ['token' => $token]);
     }

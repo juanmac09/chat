@@ -46,9 +46,11 @@ class notificationMarkedAsReadListener
             $data = [
                 'sender' => $event -> sender,
                 'recipient'=> $event->user->id,
+                'recipient_name' => $event -> user -> name,
+                'created_at'=> now(),
             ];
             $data = json_encode($data);
-            $topic = 'markAllMessageAsRead/user/';
+            $topic = ($event -> type_sender === 1) ? 'markAllMessageAsRead/user/' : 'markAllMessageAsRead/group/';
             $this->mqtt_service->published($topic.$event -> sender, $data);
         }
 

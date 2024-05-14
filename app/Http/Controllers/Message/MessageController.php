@@ -118,7 +118,7 @@ class MessageController extends Controller
         try {
 
             $this->messageSenderService->markAllMessagesAsRead($request->id_sender, Auth::user()->id, $request->type);
-            markAsReadAMessageEvent::dispatch(Auth::user(),2,null,$request->id_sender);
+            markAsReadAMessageEvent::dispatch(Auth::user(),2,null,$request->id_sender,$request->type);
             return response()->json(['success' => true], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);

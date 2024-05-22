@@ -20,7 +20,7 @@ class JwtMiddleware
      */
     public function handle($request, Closure $next)
     {
-        
+
         try {
             // $token = JWTAuth::parseToken();
             // if (!$token->check()) {

@@ -13,7 +13,7 @@ Route::get('/user', function (Request $request) {
 
 
 
-Route::middleware('auth:api')->group(function (){
+Route::middleware('jwt')->group(function (){
 
     // Group management routes
     Route::post('group/create',[GroupManagementController::class,'create_group']);

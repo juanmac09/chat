@@ -56,6 +56,10 @@ class SendMessageForMqtt
         $topic = ($event -> recipient_type == 1) ? 'user/' : 'group/';
         $this -> mqtt_service -> published($topic.$event -> recipient_entity_id, $data);
         if($event -> recipient_type != 1){
+            $data = [
+                'recipient_entity_id' => $event -> recipient_entity_id,
+            ];
+            $data = json_encode($data);
             $this -> mqtt_service -> published('groups', $data);
         }   
     }

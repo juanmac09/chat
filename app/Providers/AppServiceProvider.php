@@ -6,6 +6,7 @@ use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
 use App\Interfaces\IGroupRepository;
 use App\Interfaces\IMessageReaders;
+use App\Interfaces\IMiddlewareUserManagement;
 use App\Interfaces\IMqtt;
 use App\Interfaces\IRecipient;
 use App\Interfaces\ITranformResponses;
@@ -23,6 +24,7 @@ use App\Services\MessageServices\MessageQueryForGroupsService;
 use App\Services\MessageServices\MessageQueryForUserService;
 use App\Services\MessageServices\MessageQueryService;
 use App\Services\MessageServices\MessageSenderService;
+use App\Services\MiddlewareUserManagementService;
 use App\Services\MqttServices;
 use App\Services\RecipientServices;
 use App\Services\TranformResponsesService;
@@ -50,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IUserManagement::class,UserManagementService::class);
         $this -> app -> bind(IMessageQuery::class,MessageQueryService::class);
         $this-> app -> bind(IGroupRepository::class,GroupRepositoryService::class);
+        $this-> app -> bind(IMiddlewareUserManagement::class,MiddlewareUserManagementService::class);
     }
 
     /**

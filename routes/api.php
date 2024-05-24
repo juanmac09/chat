@@ -40,6 +40,7 @@ Route::middleware('jwt')->group(function (){
     // User routes
     Route::get('user/get-users',[UserController::class,'getUsersWithLastMessage']);
     Route::get('user/get-user',[UserController::class,'getUser']);
+    Route::get('user/get-user-jwt',[UserController::class,'getUserDataWithJwt']);
 });
 Route::get('/user/token', [UserController::class, 'generateToken']);
 

@@ -65,4 +65,24 @@ class UserController extends Controller
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
         }
     }
+
+
+
+    /**
+     * Get user data with JWT.
+     *
+     * This method retrieves user data using the JWT (JSON Web Token) authentication.
+     *
+     * @return void
+     * @throws \Throwable If an exception occurs during the process.
+     */
+    public function getUserDataWithJwt()
+    {
+        try {
+            $user = $this->user_service->getUserDataWithJWT();
+            return response()->json(['success' => true, 'user' => $user], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['success' => false, 'error' => $th->getMessage()], 500);
+        }
+    }
 }

@@ -33,7 +33,7 @@ class GroupManagementServices implements IGroupManagement
      */
     public function get_groups()
     {
-        $groups = Group::where('status', 1)->get();
+        $groups = Group::where('status', 1) -> where('archived', 0)->get();
         return $groups;
     }
 

@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Interfaces\ArchiveGroups\IArchiveGroup;
+use App\Interfaces\ArchiveGroups\IGetArchivedGroups;
+use App\Interfaces\ArchiveGroups\IUnarchiveGroup;
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
 use App\Interfaces\IGroupRepository;
@@ -16,7 +19,13 @@ use App\Interfaces\MessagesInterfaces\IMessageQuery;
 use App\Interfaces\MessagesInterfaces\IMessageQueryForGroups;
 use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
 use App\Interfaces\MessagesInterfaces\IMessageSender;
+use App\Interfaces\Report\IGroupReport;
+use App\Interfaces\Report\IGroupUserReport;
+use App\Interfaces\Report\IUserReport;
 use App\Services\AdvancedGroupsServices;
+use App\Services\ArchiveGroups\ArchiveGroupService;
+use App\Services\ArchiveGroups\GetArchivedGroupsService;
+use App\Services\ArchiveGroups\UnarchiveGroupService;
 use App\Services\GroupManagementServices;
 use App\Services\GroupRepositoryService;
 use App\Services\MessageReadersService;
@@ -27,6 +36,9 @@ use App\Services\MessageServices\MessageSenderService;
 use App\Services\MiddlewareUserManagementService;
 use App\Services\MqttServices;
 use App\Services\RecipientServices;
+use App\Services\Report\GroupReportServices;
+use App\Services\Report\GroupUserReportService;
+use App\Services\Report\UserReportService;
 use App\Services\TranformResponsesService;
 use App\Services\UserManagementService;
 use App\Services\UserRepositoryServices;
@@ -53,6 +65,12 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IMessageQuery::class,MessageQueryService::class);
         $this-> app -> bind(IGroupRepository::class,GroupRepositoryService::class);
         $this-> app -> bind(IMiddlewareUserManagement::class,MiddlewareUserManagementService::class);
+        $this -> app -> bind(IUserReport::class,UserReportService::class);
+        $this -> app -> bind(IGroupReport::class,GroupReportServices::class);
+        $this -> app -> bind(IGroupUserReport::class,GroupUserReportService::class);
+        $this -> app -> bind(IArchiveGroup::class,ArchiveGroupService::class);
+        $this -> app -> bind(IGetArchivedGroups::class,GetArchivedGroupsService::class);
+        $this -> app -> bind(IUnarchiveGroup::class,UnarchiveGroupService::class);
     }
 
     /**

@@ -83,7 +83,7 @@ class AdvancedGroupsServices implements IAdvancedGroups
      */
     public function getGroupsForUser(User $user)
     {
-        $groups = $user->groups()->where('status', 1)->get();
+        $groups = $user->groups()->where('status', 1) -> where('archived',0) ->get();
         return $groups;
     }
 

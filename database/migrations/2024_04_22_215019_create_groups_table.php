@@ -16,6 +16,7 @@ return new class extends Migration
             $table -> string('name');
             $table -> foreignId('onwer_id') -> constrained('users') -> unique();
             $table -> boolean('status') -> default(1);
+            $table -> boolean('archived') -> default(0);
             $table->timestamps();
         });
     }

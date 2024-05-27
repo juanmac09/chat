@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Interfaces\ArchiveGroups\IArchiveGroup;
 use App\Interfaces\ArchiveGroups\IGetArchivedGroups;
 use App\Interfaces\ArchiveGroups\IUnarchiveGroup;
+use App\Interfaces\Exports\IUserActivity;
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
 use App\Interfaces\IGroupRepository;
@@ -26,6 +27,7 @@ use App\Services\AdvancedGroupsServices;
 use App\Services\ArchiveGroups\ArchiveGroupService;
 use App\Services\ArchiveGroups\GetArchivedGroupsService;
 use App\Services\ArchiveGroups\UnarchiveGroupService;
+use App\Services\Exports\UserActivityServices;
 use App\Services\GroupManagementServices;
 use App\Services\GroupRepositoryService;
 use App\Services\MessageReadersService;
@@ -71,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IArchiveGroup::class,ArchiveGroupService::class);
         $this -> app -> bind(IGetArchivedGroups::class,GetArchivedGroupsService::class);
         $this -> app -> bind(IUnarchiveGroup::class,UnarchiveGroupService::class);
+        $this -> app -> bind(IUserActivity::class,UserActivityServices::class);
     }
 
     /**

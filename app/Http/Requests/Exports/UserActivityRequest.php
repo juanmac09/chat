@@ -25,9 +25,10 @@ class UserActivityRequest extends FormRequest
     {
         $route = $this-> route() -> uri();
 
-        // $recipient_type_rule = ($route == 'api/report/users/inactive-general' || $route == 'api/report/groups/inactive' || $route == 'api/report/users/active-general') ? '' : 'required|numeric|between:1,2';
+        $recipient_type_rule = ($route != 'api/export/users/activity-specific' || $route != 'api/export/groups/activity') ? '' : 'required|numeric|between:1,2';
 
         return [
+            'recipient_type' => $recipient_type_rule,
             'amount' => 'numeric|min:1|required|integer',
             'conversion_type' => 'numeric|required|integer|between:1,5'
         ];

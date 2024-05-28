@@ -21,18 +21,28 @@ class UserActivityServices implements IUserActivity
      * @param int $limitTime The time limit for the report.
      *
      * @return void
-    */
-    public function exportUserActivityGeneral(int $limitTime)
+     */
+    public function exportUserActivityGeneral(int $limitTime, string $time)
     {
         $activeUsers = $this->userReport->getGeneralActiveUsers($limitTime);
         $inactiveUsers = $this->userReport->getGeneralInactiveUsers($limitTime);
-        return Excel::download(new UserActivityGeneralExport($activeUsers, $inactiveUsers), 'ActivityUserGeneral.xlsx');
+        return Excel::download(new UserActivityGeneralExport($activeUsers, $inactiveUsers, $time), 'ActivityUserGeneral.xlsx');
     }
 
-
-    public function exportUserActivitySpecific(int $limitTime, int $type)
+    /**
+     * Exports the specific user activity report.
+     *
+     * @param int $limitTime The time limit for the report.
+     * @param int $type The type of specific user activity to report.
+     * @param string $time The time frame for the report.
+     *
+     * @return void
+     */
+    public function exportUserActivitySpecific(int $limitTime, int $type, string $time)
     {
         $activeUsers = $this->userReport->getSpecificActiveUsers($limitTime, $type);
         $inactiveUsers = $this->userReport->getSpecificInactiveUsers($limitTime, $type);
+        return Excel::download(new UserActivityGeneralExport($activeUsers, $inactiveUsers, $time, $type), 'ActivityUserSpecific.xlsx');
+     
     }
 }

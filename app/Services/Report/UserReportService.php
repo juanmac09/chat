@@ -22,7 +22,7 @@ class UserReportService implements IUserReport
     {
         $usersInactive = DB::table('users as u')
             ->leftJoin('messages as m', 'u.id', '=', 'm.sender_id')
-            ->select('u.id', 'u.name', DB::raw('MAX(m.created_at) AS last_message_time'))
+            ->select('u.id', 'u.name','u.rrhh_id', DB::raw('MAX(m.created_at) AS last_message_time'))
             ->groupBy('u.id', 'u.name')
             ->havingRaw('last_message_time IS NULL OR TIMESTAMPDIFF(SECOND, last_message_time, NOW()) > ?', [$limitTime])
             ->get();
@@ -56,7 +56,7 @@ class UserReportService implements IUserReport
             GROUP BY m.sender_id
             ) AS last_messages
         "), 'u.id', '=', 'last_messages.sender_id')
-            ->select('u.id', 'u.name', 'last_messages.last_message_time')
+            ->select('u.id', 'u.name','u.rrhh_id', 'last_messages.last_message_time')
             ->where(function ($query) use ($limitTime) {
                 $query->whereNull('last_messages.last_message_time')
                     ->orWhereRaw('TIMESTAMPDIFF(SECOND, last_messages.last_message_time, NOW()) > ?', [$limitTime]);
@@ -81,7 +81,7 @@ class UserReportService implements IUserReport
     {
         $usersActive = DB::table('users as u')
             ->leftJoin('messages as m', 'u.id', '=', 'm.sender_id')
-            ->select('u.id', 'u.name', DB::raw('MAX(m.created_at) as last_message_time'))
+            ->select('u.id', 'u.name','u.rrhh_id', DB::raw('MAX(m.created_at) as last_message_time'))
             ->groupBy('u.id', 'u.name')
             ->havingRaw('MAX(m.created_at) IS NOT NULL AND TIMESTAMPDIFF(SECOND, MAX(m.created_at), NOW()) <= ?', [$limitTime])
             ->get();
@@ -111,7 +111,7 @@ class UserReportService implements IUserReport
          GROUP BY m.sender_id
         ) AS last_messages
     "), 'u.id', '=', 'last_messages.sender_id')
-            ->select('u.id', 'u.name', 'last_messages.last_message_time')
+            ->select('u.id', 'u.name','u.rrhh_id', 'last_messages.last_message_time')
             ->whereNotNull('last_messages.last_message_time')
             ->whereRaw('TIMESTAMPDIFF(SECOND, last_messages.last_message_time, NOW()) <= ?', [$limitTime])
             ->get();

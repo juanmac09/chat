@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Exports\GroupReportExportController;
 use App\Http\Controllers\Exports\UserReportExportController;
 use App\Http\Controllers\Group\AdvancedGroupController;
 use App\Http\Controllers\Group\GroupArchiveController;
@@ -59,10 +60,17 @@ Route::middleware('jwt')->group(function (){
     // Group 
     Route::get('report/groups/inactive',[GroupReportController::class,'getInactiveGroups']);
     Route::get('report/groups/membership',[GroupReportController::class,'getNumberOfUsersPerGroup']);
+    Route::get('report/groups/active',[GroupReportController::class,'getActiveGroup']);
+    Route::get('report/groups/get-participants',[GroupReportController::class,'getGroupParticipants']);
 
+    
     // Export routes
     // User
     Route::get('export/users/activity-general',[UserReportExportController::class, 'exportUserActivityGeneral']);
+    Route::get('export/users/activity-specific',[UserReportExportController::class, 'exportUserActivitySpecific']);
+    // Group
+    Route::get('export/groups/get-participants',[GroupReportExportController::class ,'exportGroupParticipants']);
+    Route::get('export/groups/activity',[GroupReportExportController::class,'GroupActivityExport']);
 });
 Route::get('/user/token', [UserController::class, 'generateToken']);
 

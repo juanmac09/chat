@@ -25,7 +25,7 @@ class InactiveReportRequest extends FormRequest
     {
         $route = $this-> route() -> uri();
 
-        $recipient_type_rule = ($route == 'api/report/users/inactive-general' || $route == 'api/report/groups/inactive' || $route == 'api/report/users/active-general') ? '' : 'required|numeric|between:1,2';
+        $recipient_type_rule = ($route == 'api/report/users/inactive-general' || $route == 'api/report/groups/inactive' || $route == 'api/report/users/active-general' || $route == 'api/report/groups/active') ? '' : 'required|numeric|between:1,2';
 
         return [
             'recipient_type' => $recipient_type_rule,

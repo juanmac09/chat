@@ -23,6 +23,7 @@ class GroupReportServices implements IGroupReport
         INNER JOIN recipients r ON m.id = r.message_id
         WHERE r.recipient_type = "group"
         GROUP BY r.recipient_entity_id) AS last_messages'), 'g.id', '=', 'last_messages.group_id')
+            ->where('g.status', '=', 1)
             ->whereNull('last_messages.group_id')
             ->orWhereRaw('TIMESTAMPDIFF(SECOND, last_messages.last_message_time, NOW()) > ' . $limitTime)
             ->select('g.id', 'g.name','g.status','g.archived')

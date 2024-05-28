@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Interfaces\ArchiveGroups\IArchiveGroup;
 use App\Interfaces\ArchiveGroups\IGetArchivedGroups;
 use App\Interfaces\ArchiveGroups\IUnarchiveGroup;
+use App\Interfaces\Exports\IExportParticipants;
+use App\Interfaces\Exports\IGroupActivityExport;
 use App\Interfaces\Exports\IUserActivity;
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
@@ -20,6 +22,7 @@ use App\Interfaces\MessagesInterfaces\IMessageQuery;
 use App\Interfaces\MessagesInterfaces\IMessageQueryForGroups;
 use App\Interfaces\MessagesInterfaces\IMessageQueryForUsers;
 use App\Interfaces\MessagesInterfaces\IMessageSender;
+use App\Interfaces\Report\IActiveGroupReport;
 use App\Interfaces\Report\IGroupReport;
 use App\Interfaces\Report\IGroupUserReport;
 use App\Interfaces\Report\IUserReport;
@@ -27,6 +30,8 @@ use App\Services\AdvancedGroupsServices;
 use App\Services\ArchiveGroups\ArchiveGroupService;
 use App\Services\ArchiveGroups\GetArchivedGroupsService;
 use App\Services\ArchiveGroups\UnarchiveGroupService;
+use App\Services\Exports\ExportParticipantsServices;
+use App\Services\Exports\GroupActivityExportServices;
 use App\Services\Exports\UserActivityServices;
 use App\Services\GroupManagementServices;
 use App\Services\GroupRepositoryService;
@@ -38,6 +43,7 @@ use App\Services\MessageServices\MessageSenderService;
 use App\Services\MiddlewareUserManagementService;
 use App\Services\MqttServices;
 use App\Services\RecipientServices;
+use App\Services\Report\ActiveGroupReportServices;
 use App\Services\Report\GroupReportServices;
 use App\Services\Report\GroupUserReportService;
 use App\Services\Report\UserReportService;
@@ -74,6 +80,9 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IGetArchivedGroups::class,GetArchivedGroupsService::class);
         $this -> app -> bind(IUnarchiveGroup::class,UnarchiveGroupService::class);
         $this -> app -> bind(IUserActivity::class,UserActivityServices::class);
+        $this -> app -> bind(IActiveGroupReport::class,ActiveGroupReportServices::class);
+        $this -> app -> bind(IExportParticipants::class,ExportParticipantsServices::class);
+        $this -> app -> bind(IGroupActivityExport::class,GroupActivityExportServices::class);
     }
 
     /**

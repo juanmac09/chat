@@ -7,6 +7,7 @@ use App\Interfaces\ArchiveGroups\IGetArchivedGroups;
 use App\Interfaces\ArchiveGroups\IUnarchiveGroup;
 use App\Interfaces\Exports\IExportParticipants;
 use App\Interfaces\Exports\IGroupActivityExport;
+use App\Interfaces\Exports\IReportGeneralExport;
 use App\Interfaces\Exports\IUserActivity;
 use App\Interfaces\IAdvancedGroups;
 use App\Interfaces\IGroupManagement;
@@ -32,6 +33,7 @@ use App\Services\ArchiveGroups\GetArchivedGroupsService;
 use App\Services\ArchiveGroups\UnarchiveGroupService;
 use App\Services\Exports\ExportParticipantsServices;
 use App\Services\Exports\GroupActivityExportServices;
+use App\Services\Exports\ReportGeneralExportServices;
 use App\Services\Exports\UserActivityServices;
 use App\Services\GroupManagementServices;
 use App\Services\GroupRepositoryService;
@@ -83,6 +85,7 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IActiveGroupReport::class,ActiveGroupReportServices::class);
         $this -> app -> bind(IExportParticipants::class,ExportParticipantsServices::class);
         $this -> app -> bind(IGroupActivityExport::class,GroupActivityExportServices::class);
+        $this -> app -> bind(IReportGeneralExport::class,ReportGeneralExportServices::class);
     }
 
     /**

@@ -25,7 +25,7 @@ class UserActivityRequest extends FormRequest
     {
         $route = $this-> route() -> uri();
 
-        $recipient_type_rule = ($route != 'api/export/users/activity-specific' || $route != 'api/export/groups/activity') ? '' : 'required|numeric|between:1,2';
+        $recipient_type_rule = ($route != 'api/export/users/activity-specific' || $route != 'api/export/groups/activity' || $route != 'api/export/general/activity') ? '' : 'required|numeric|between:1,2';
 
         return [
             'recipient_type' => $recipient_type_rule,

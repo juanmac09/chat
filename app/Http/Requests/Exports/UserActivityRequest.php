@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Report;
+namespace App\Http\Requests\Exports;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class InactiveReportRequest extends FormRequest
+class UserActivityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class InactiveReportRequest extends FormRequest
     {
         $route = $this-> route() -> uri();
 
-        $recipient_type_rule = ($route == 'api/report/users/inactive-general' || $route == 'api/report/groups/inactive' || $route == 'api/report/users/active-general' || $route == 'api/report/groups/active') ? '' : 'required|numeric|between:1,2';
+        $recipient_type_rule = ($route != 'api/export/users/activity-specific' || $route != 'api/export/groups/activity' || $route != 'api/export/general/activity') ? '' : 'required|numeric|between:1,2';
 
         return [
             'recipient_type' => $recipient_type_rule,
@@ -33,6 +33,7 @@ class InactiveReportRequest extends FormRequest
             'conversion_type' => 'numeric|required|integer|between:1,5'
         ];
     }
+
 
     /**
      * Handle the failed validation attempt.

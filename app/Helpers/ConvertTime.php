@@ -101,4 +101,62 @@ class ConvertTime
                 break;
         }
     }
+    /**
+     * Calculates the time in a given unit and amount, and returns the equivalent time in a specified unit.
+     *
+     * @param int $amount The number of time units to be converted.
+     * @param int $time The type of time unit to be converted.
+     *                    1 - Years
+     *                    2 - Months
+     *                    3 - Weeks
+     *                    4 - Days
+     *                    5 - Hours
+     *
+     * @return string The number of seconds equivalent to the given time units.
+     */
+    public static function calculateTime(int $amount, int $time)
+    {
+        $date = $amount;
+        switch ($time) {
+            case 1:
+                if ($amount == 1) {
+                    $date .= ' año';
+                } else {
+                    $date .= ' años';
+                }
+                break;
+            case 2:
+                if ($amount == 1) {
+                    $date .= ' mes';
+                } else {
+                    $date .= ' meses';
+                }
+                break;
+            case 3:
+                if ($amount == 1) {
+                    $date .= ' semana';
+                } else {
+                    $date .= ' semanas';
+                }
+                break;
+            case 4:
+                if ($amount == 1) {
+                    $date .= ' día';
+                } else {
+                    $date .= ' días';
+                }
+                break;
+            case 5:
+                if ($amount == 1) {
+                    $date .= ' hora';
+                } else {
+                    $date .= ' horas';
+                }
+                break;
+            default:
+                // No hacer nada en caso de que el valor de $time no esté entre 1 y 5
+                break;
+        }
+        return $date;
+    }
 }

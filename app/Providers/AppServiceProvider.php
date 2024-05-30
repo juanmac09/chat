@@ -26,6 +26,7 @@ use App\Interfaces\MessagesInterfaces\IMessageSender;
 use App\Interfaces\Report\IActiveGroupReport;
 use App\Interfaces\Report\IGroupReport;
 use App\Interfaces\Report\IGroupUserReport;
+use App\Interfaces\Report\IMessageReport;
 use App\Interfaces\Report\IUserReport;
 use App\Services\AdvancedGroupsServices;
 use App\Services\ArchiveGroups\ArchiveGroupService;
@@ -48,6 +49,7 @@ use App\Services\RecipientServices;
 use App\Services\Report\ActiveGroupReportServices;
 use App\Services\Report\GroupReportServices;
 use App\Services\Report\GroupUserReportService;
+use App\Services\Report\MessageReportServices;
 use App\Services\Report\UserReportService;
 use App\Services\TranformResponsesService;
 use App\Services\UserManagementService;
@@ -86,6 +88,7 @@ class AppServiceProvider extends ServiceProvider
         $this -> app -> bind(IExportParticipants::class,ExportParticipantsServices::class);
         $this -> app -> bind(IGroupActivityExport::class,GroupActivityExportServices::class);
         $this -> app -> bind(IReportGeneralExport::class,ReportGeneralExportServices::class);
+        $this -> app -> bind(IMessageReport::class,MessageReportServices::class);
     }
 
     /**

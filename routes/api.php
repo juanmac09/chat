@@ -7,6 +7,7 @@ use App\Http\Controllers\Group\AdvancedGroupController;
 use App\Http\Controllers\Group\GroupArchiveController;
 use App\Http\Controllers\Group\GroupManagementController;
 use App\Http\Controllers\Message\MessageController;
+use App\Http\Controllers\Report\MessageReportController;
 use App\Http\Controllers\Reports\GroupReportController;
 use App\Http\Controllers\Reports\UserReportController;
 use App\Http\Controllers\User\UserController;
@@ -63,8 +64,10 @@ Route::middleware('jwt')->group(function (){
     Route::get('report/groups/membership',[GroupReportController::class,'getNumberOfUsersPerGroup']);
     Route::get('report/groups/active',[GroupReportController::class,'getActiveGroup']);
     Route::get('report/groups/get-participants',[GroupReportController::class,'getGroupParticipants']);
+    // Messages
+    Route::get('report/groups/messages-per-day',[MessageReportController::class,'getMessagesPerDayAllUsers']);
 
-    
+
     // Export routes
     // User
     Route::get('export/users/activity-general',[UserReportExportController::class, 'exportUserActivityGeneral']);

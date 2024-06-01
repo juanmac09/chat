@@ -24,6 +24,8 @@ class GetMessagesRequest extends FormRequest
      */
     public function rules(): array
     {
+        $page = ($this->input('recipient_type') == 1) ? ['required','integer','numeric' ] : '';
+        $perPage = ($this->input('recipient_type') == 1) ? ['required','integer','numeric' ] :'';
         return [
             'recipient_entity_id' => [
                 'required',
@@ -36,6 +38,8 @@ class GetMessagesRequest extends FormRequest
                 ),
             ],
             'recipient_type' => 'required|numeric|between:1,2',
+            'page' => $page,
+            'perPage'=> $perPage,
         ];
     }
     /**

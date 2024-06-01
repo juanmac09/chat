@@ -57,7 +57,7 @@ class MessageController extends Controller
     public function getMessages(GetMessagesRequest $request)
     {
         try {
-            $message = ($request->recipient_type == 1) ? $this->messageQueryUserService->getMessagesBetweenUsers(Auth::user()->id, $request->recipient_entity_id) : $this->messageQueryGroupService->getMessagesFromAGroup($request->recipient_entity_id);
+            $message = ($request->recipient_type == 1) ? $this->messageQueryUserService->getMessagesBetweenUsers(Auth::user()->id, $request->recipient_entity_id, $request -> page, $request -> perPage) : $this->messageQueryGroupService->getMessagesFromAGroup($request->recipient_entity_id);
             return response()->json(['success' => true, 'messages' => $message], 200);
         } catch (\Throwable $th) {
             return response()->json(['success' => false, 'error' => $th->getMessage()], 500);

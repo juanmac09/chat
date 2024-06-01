@@ -27,7 +27,7 @@ class MessageQueryForUserService implements IMessageQueryForUsers
      * @param int $recipient_id The ID of the recipient user.
      * @return \Illuminate\Support\Collection A collection of messages between the two users.
      */
-    public function getMessagesBetweenUsers(int $sender_id, int $recipient_id)
+    public function getMessagesBetweenUsers(int $sender_id, int $recipient_id, int $page = 1, int $perPage = 20)
     {
         $data = DB::table('chatApp.users AS sender')
             ->select([
@@ -39,6 +39,7 @@ class MessageQueryForUserService implements IMessageQueryForUsers
                 'recipient.name as recipient_name',
                 'messages.created_at'
             ])
+            ->orderBy('messages.id','desc')
             ->join('chatApp.messages', 'sender.id', '=', 'messages.sender_id')
             ->join('chatApp.recipients', 'messages.id', '=', 'recipients.message_id')
             ->join('chatApp.users AS recipient', 'recipient.id', '=', 'recipients.recipient_entity_id')
@@ -52,7 +53,7 @@ class MessageQueryForUserService implements IMessageQueryForUsers
                 });
             })
             ->where('recipients.recipient_type', 'user')
-            ->get();
+            ->simplePaginate($perPage, ['*'], 'page', $page);
 
         return $this->transformResponsesService->transformResponse($data, $this->messageReadersService);
     }
@@ -118,7 +119,7 @@ class MessageQueryForUserService implements IMessageQueryForUsers
      *
      * @param int $user_id The ID of the user to get the unread messages for.
      * @return \Illuminate\Support\Collection A collection of unread messages for the specified user.
-    */
+     */
     public function countUnreadMessagesPerUser(int $sender, int $recipient)
     {
 
